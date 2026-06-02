@@ -86,7 +86,7 @@ gainInc = 5 # ditto for gain
 offset_flag = False
 offset_str = "0,0"
 solve = False
-testMode = True
+testMode = False
 stars = peak = '0'
 capArray = np.zeros((760,960),dtype=np.uint8)
 hotspot = False
