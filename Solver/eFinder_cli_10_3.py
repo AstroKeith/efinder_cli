@@ -19,7 +19,7 @@ import pigpio
 
 led = pigpio.pi()
 led.hardware_PWM(18,1,500000)
-
+os.system("sudo chmod a+rwx -R /var/www/html/")
 global radec
 fault = ""
 
@@ -584,7 +584,12 @@ cmd = {
     "IS" : "nexus.write(':IS'+ctlSaveImage(msg.strip('#')[3:])+'#')"
 }
 
-
+try:
+    nexus = NexusUsb.Nexus()
+except Exception as error:
+    fault = fault + "5"
+    with open("/var/www/html/eFinderLog.txt", "a") as h:
+        h.write(str(error)+'\n')
         
 if fault == "":
     # implement wifi settings as per eFinder.config
@@ -603,16 +608,9 @@ if fault == "":
         with open("/var/www/html/eFinderLog.txt", "a") as h:
             h.write(str(error)+'\n')
         print ('Error',error) 
-
-try:
-    nexus = NexusUsb.Nexus()
-except Exception as error:
-    fault = fault + "5"
-    with open("/var/www/html/eFinderLog.txt", "a") as h:
-        h.write(str(error)+'\n')
-
-if fault != "":
+else:
     version = version + "(" + fault + ")"
+    setWifi('1') # sets wifi to Hotspot state and updates param and hotspot variable
     
 led_duty_cycle = int(float(param["LED"])) * 10000
 led.hardware_PWM(18,200,led_duty_cycle)

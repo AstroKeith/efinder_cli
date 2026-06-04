@@ -19,7 +19,7 @@ import pigpio
 
 led = pigpio.pi()
 led.hardware_PWM(18,1,500000)
-
+os.system("sudo chmod a+rwx -R /var/www/html/")
 global radec
 fault = ""
 
@@ -190,14 +190,15 @@ def measure_offset():
     param["d_y"] = "{: .2f}".format(float(60 * d_y))
     save_param()
     offset_str = ('%1.3f,%1.3f' % (d_x,d_y))
-    hipId = str(solution['matched_catID'][0])
+    hipId = str(solution['matched_catID'][0]).strip('[]')
     name = secondname = ""
     with open(home_path+'/Solver/starnames.csv') as csvfile:
             reader = csv.reader(csvfile, delimiter=',')
             for row in reader:
                 nam = row[0].strip()
                 hip = row[1]
-                if str(row[1]) == str(solution['matched_catID'][0]):
+                print(str(row[1]),hipId)
+                if str(row[1]) == hipId:
                     hipId = hip
                     name = nam
                     if len(row[2].strip())==0:
@@ -583,7 +584,12 @@ cmd = {
     "IS" : "nexus.write(':IS'+ctlSaveImage(msg.strip('#')[3:])+'#')"
 }
 
-
+try:
+    nexus = NexusUsb.Nexus()
+except Exception as error:
+    fault = fault + "5"
+    with open("/var/www/html/eFinderLog.txt", "a") as h:
+        h.write(str(error)+'\n')
         
 if fault == "":
     # implement wifi settings as per eFinder.config
@@ -602,16 +608,9 @@ if fault == "":
         with open("/var/www/html/eFinderLog.txt", "a") as h:
             h.write(str(error)+'\n')
         print ('Error',error) 
-
-try:
-    nexus = NexusUsb.Nexus()
-except Exception as error:
-    fault = fault + "5"
-    with open("/var/www/html/eFinderLog.txt", "a") as h:
-        h.write(str(error)+'\n')
-
-if fault != "":
+else:
     version = version + "(" + fault + ")"
+    setWifi('1') # sets wifi to Hotspot state and updates param and hotspot variable
     
 led_duty_cycle = int(float(param["LED"])) * 10000
 led.hardware_PWM(18,200,led_duty_cycle)
