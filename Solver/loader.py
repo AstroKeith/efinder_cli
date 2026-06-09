@@ -18,7 +18,7 @@ if switch.read(17) == 0: # need to start as Mini
     led.hardware_PWM(18,10,500000)
     time.sleep(2)
     led.hardware_PWM(18,200,0)
-    subprocess.Popen(["venv-efinder/bin/python","Solver/eFinder_mini.py"])
+    subprocess.Popen(["/home/efinder/venv-efinder/bin/python","/home/efinder/Solver/eFinder_mini.py"])
     sys.exit(0)
 
 led.hardware_PWM(18,10,500000)
@@ -31,23 +31,28 @@ runfile = '/home/efinder/uploads/update.py'
 
 if os.path.isfile(filename):
 	led.hardware_PWM(18,10,500000) # blink led very fast to indicate update in progress
-	os.system("sudo chmod a+rwx -R /var/www/html/") # ensure web server can write to uploads folder for updates and logs
+	subprocess.run(['sudo', 'chmod', 'a+rwx', '-R', '/var/www/html/'], check=False) # ensure web server can write to uploads folder for updates and logs
 	try:
-		print("Following files found to be installed/updated")
-		os.system('unzip -v ' + filename)
+		#print("Following files found to be installed/updated")
+		#subprocess.run(['unzip', '-v', filename], check=True)
 		print('Starting update')
-		os.system('sudo unzip -d / -o ' + filename)
-		os.system('sudo sync')
-		os.system('sudo rm '+filename)
+		os.system('sudo chown efinder:efinder "efinderUpdate.zip"')
+		result = subprocess.run(['sudo', 'unzip', '-d', '/', '-o', filename],
+		                        capture_output=True, text=True)
+		if result.returncode != 0:
+			raise RuntimeError(f"unzip failed (exit {result.returncode}):\n{result.stderr}")
+		print(result.stdout)
+		subprocess.run(['sudo', 'sync'], check=True)
+		subprocess.run(['sudo', 'rm', filename], check=True)
 		print('All files updated and zip file deleted')
 	except Exception as ex:
 		print(f"An unexpected error occurred: {ex}")
 		with open("eFinderLoader.txt", "w") as h:
 			h.write(str(ex))
 		try:
-			os.system('sudo rm '+filename) # remove the zip file to prevent repeated errors on reboot
-		except Exception as ex:
-			print(f"An unexpected error occurred while trying to remove the zip file: {ex}")
+			subprocess.run(['sudo', 'rm', filename], check=False) # remove the zip file to prevent repeated errors on reboot
+		except Exception as ex2:
+			print(f"An unexpected error occurred while trying to remove the zip file: {ex2}")
 	reboot_flag = True
 	led.hardware_PWM(18,200,0) # turn off LED
 

@@ -35,8 +35,9 @@ if len(sys.argv) > 1:
     os.system('pkill -9 -f eFinder.py') # stops the autostart eFinder program running
 from pathlib import Path
 home_path = str(Path.home())
+version = "8.3"
 with open("/var/www/html/eFinderLiveLog.txt", "w") as h:
-    h.write('eFinder Live errors on boot:\n')
+    h.write('eFinder Live v' + version + ' errors on boot:\n')
 param = dict()
 try:
     if os.path.exists("Solver/eFinder.config") == True:
@@ -50,7 +51,7 @@ except Exception as error:
     with open("/var/www/html/eFinderLiveLog.txt", "a") as h:
         h.write(str(error)+'\n')
 
-version = "8.3"
+
 radec = ('%6.4f %+6.4f' % (0,0))
 
 print ('eFinder Mini','Version '+ version)
@@ -89,7 +90,6 @@ solve = False
 testMode = False
 stars = peak = '0'
 capArray = np.zeros((760,960),dtype=np.uint8)
-hotspot = False
 keep = False
 solved_radec = 0,0
 fnt = ImageFont.truetype("/home/efinder/Solver/text.ttf",16)
@@ -362,7 +362,7 @@ def reset_offset():
     return('1') 
 
 def save_param():
-    with open("/var/www/html/Solver/eFinder.config", "w") as h:
+    with open("/home/efinder/Solver/eFinder.config", "w") as h:
         for key, value in param.items():
             h.write("%s:%s\n" % (key, value))
 
@@ -594,7 +594,7 @@ except Exception as error:
         
 coordinates = Coordinates_wifi_2.Coordinates()
 
-hotspot = False
+hotspot = True
 try:
     if param['wifi'].lower() != 'hotspot':
         hotspot = False

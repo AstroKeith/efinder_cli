@@ -22,6 +22,7 @@ led.hardware_PWM(18,1,500000)
 os.system("sudo chmod a+rwx -R /var/www/html/")
 global radec
 fault = ""
+version = "10.3"
 
 if len(sys.argv) > 1:
     print ('Killing running version')
@@ -30,7 +31,7 @@ from pathlib import Path
 home_path = str(Path.home())
 
 with open("/var/www/html/eFinderLog.txt", "w") as h:
-    h.write('eFinder errors on boot:\n')
+    h.write('eFinder v' + version + ' errors on boot:\n')
         
 param = dict()
 try:
@@ -44,7 +45,7 @@ except Exception as error:
     with open("/var/www/html/eFinderLog.txt", "a") as h:
         h.write(str(error)+'\n')
         
-version = "10.3"
+
 radec = ('%6.4f %+6.4f' % (0,0))
 
 print ('Nexus eFinder','Version '+ version)
@@ -86,10 +87,7 @@ eTime = "9.9"
 patch = np.zeros((32,32),dtype=np.uint8)
 psfArray = np.zeros((32,32),dtype=np.uint8)
 capArray = np.zeros((760,960),dtype=np.uint8)
-auto = False
-hotspot = False
-hotspotSet = False
-infraSet = False
+hotspot = True
 fnt = ImageFont.truetype("/home/efinder/Solver/text.ttf",16)
 frame = 0
 keep = False
