@@ -22,7 +22,7 @@ led.hardware_PWM(18,1,500000)
 os.system("sudo chmod a+rwx -R /var/www/html/")
 global radec
 fault = ""
-version = "10.3"
+version = "10.4"
 
 if len(sys.argv) > 1:
     print ('Killing running version')
@@ -71,7 +71,7 @@ try:
     altAngle = True
 except Exception as error:
     print('no acceleromater fitted')
-    fault = fault + "2"
+    #fault = fault + "2"
     altAngle = False
     with open("/var/www/html/eFinderLog.txt", "a") as h:
         h.write(str(error)+'\n')
