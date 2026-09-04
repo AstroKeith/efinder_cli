@@ -74,7 +74,25 @@ echo " "
 echo "*****************************************************************************"
 echo "installing olive-solve"
 echo "*****************************************************************************"
-venv-efinder/bin/python venv-efinder/bin/pip install Solver/tetra3-0.1.0-cp38-abi3-manylinux_2_35_aarch64.whl
+
+ARCH=$(dpkg --print-architecture)
+
+case "$ARCH" in
+    arm64)
+        echo "64-bit Bookworm detected"
+        venv-efinder/bin/python venv-efinder/bin/pip install Solver/tetra3-0.1.0-cp38-abi3-manylinux_2_35_aarch64.whl
+        ;;
+    armhf)
+        echo "32-bit Bookworm detected"
+        venv-efinder/bin/python venv-efinder/bin/pip install Solver/tetra3-0.1.0-cp38-abi3-linux_armv6l.whl
+        ;;
+    *)
+        echo "Unsupported architecture: $ARCH" >&2
+        exit 1
+        ;;
+esac
+
+
 
 echo " "
 echo "*****************************************************************************"
