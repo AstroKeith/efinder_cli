@@ -33,7 +33,7 @@ echo " "
 echo "*****************************************************************************"
 echo "Downloading eFinder_cli from AstroKeith GitHub"
 echo "*****************************************************************************"
-sudo -u efinder git clone https://github.com/AstroKeith/eFinder_cli_2.git
+sudo -u efinder git clone https://github.com/AstroKeith/eFinder_cli.git
 echo " "
 
 cd $HOME
@@ -120,5 +120,5 @@ sudo cp newconfig.txt /boot/firmware/config.txt
 
 cd $HOME
 
-sudo reboot now
+#sudo reboot now
 
